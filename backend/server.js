@@ -52,12 +52,10 @@ app.get('/', (_req, res) => {
   });
 });
 
-// Route de healthcheck pour Render
 app.get('/health', (_req, res) => {
   res.status(200).json({ status: 'healthy' });
 });
 
-// Gestion d'erreurs globale
 app.use((err, req, res, next) => {
   console.error('❌ Erreur:', err);
   res.status(err.status || 500).json({
@@ -67,7 +65,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Connexion MongoDB avec retry
 const connectDB = async (retries = 5) => {
   for (let i = 0; i < retries; i++) {
     try {
@@ -92,19 +89,16 @@ const connectDB = async (retries = 5) => {
         throw err;
       }
       
-      // Attendre avant de réessayer
       await new Promise(resolve => setTimeout(resolve, 5000));
     }
   }
 };
 
-// Démarrage du serveur
 const startServer = async () => {
   try {
-    // Connecter à MongoDB
+  
     await connectDB();
 
-    // Démarrer le serveur
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Serveur démarré sur le port ${PORT}`);
       console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
@@ -116,7 +110,6 @@ const startServer = async () => {
   }
 };
 
-// Gestion des signaux de terminaison
 process.on('SIGINT', async () => {
   console.log('\n⚠️  Signal SIGINT reçu');
   await mongoose.connection.close();
@@ -131,7 +124,6 @@ process.on('SIGTERM', async () => {
   process.exit(0);
 });
 
-// Démarrer
 startServer();
 
  
