@@ -1,0 +1,54 @@
+=== VARIABLES D'ENVIRONNEMENT REQUISES POUR RENDER ===
+
+Allez dans Dashboard Render → testNaN-2 → Environment → Add Environment Variable
+
+OBLIGATOIRES:
+------------
+
+1. MONGO_URI
+   Valeur: mongodb+srv://jeanphilippekamarakmr_db_user:TDDp54HIMjVknmBR@cluster0.ucryk7o.mongodb.net/testNaN?retryWrites=true&w=majority
+   
+2. ACCESS_TOKEN_SECRET
+   Générez avec: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+   Exemple: a1b2c3d4e5f6...très_long_secret
+   
+3. REFRESH_TOKEN_SECRET
+   Générez avec: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+   Exemple: f6e5d4c3b2a1...très_long_secret_différent
+   
+4. NODE_ENV
+   Valeur: production
+   
+5. FRONTEND_URL
+   Valeur: https://testnan-frontend.onrender.com
+   (ou l'URL de votre frontend une fois déployé)
+
+OPTIONNELLES:
+------------
+
+6. PORT
+   Valeur: 5002
+   (Render le définit automatiquement, mais vous pouvez le spécifier)
+
+
+=== MONGODB ATLAS - VÉRIFIER ===
+
+1. Allez sur https://cloud.mongodb.com/
+2. Network Access → Vérifiez que 0.0.0.0/0 est autorisé
+3. Database Access → Vérifiez que l'utilisateur existe et a les droits
+
+=== APRÈS AVOIR AJOUTÉ LES VARIABLES ===
+
+1. Sauvegardez les changements
+2. Cliquez sur "Manual Deploy" → "Deploy latest commit"
+3. Regardez les logs en temps réel
+
+=== GÉNÉRER LES SECRETS JWT ===
+
+Ouvrez un terminal et tapez:
+
+node -e "console.log('ACCESS_TOKEN_SECRET=' + require('crypto').randomBytes(64).toString('hex'))"
+node -e "console.log('REFRESH_TOKEN_SECRET=' + require('crypto').randomBytes(64).toString('hex'))"
+
+Copiez-collez les résultats dans Render.
+
