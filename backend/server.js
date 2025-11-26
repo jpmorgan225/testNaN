@@ -16,19 +16,39 @@ const PORT = process.env.PORT || 5002;
 
 const allowedOrigins = [
   process.env.FRONTEND_URL,
- 'https://testnan-3.onrender.com'
+  'https://testnan-3.onrender.com',
+  'http://localhost:5173',
+  'http://localhost:3000'
 ].filter(Boolean);
+
+console.log('🌐 Allowed CORS origins:', allowedOrigins);
+console.log('🌐 FRONTEND_URL env:', process.env.FRONTEND_URL);
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
+    console.log('🔍 CORS check - Request origin:', origin);
+    
+    if (!origin) {
+      console.log('✅ CORS: No origin - allowing');
+      return callback(null, true);
+    }
     
     if (allowedOrigins.includes(origin)) {
+      console.log('✅ CORS: Origin allowed');
       callback(null, true);
     } else {
+      console.log('❌ CORS: Origin NOT in allowed list:', origin);
+      // En production, être plus permissif pour le debug
       if (process.env.NODE_ENV === 'production') {
-        callback(new Error('Not allowed by CORS'));
+        // Autoriser toutes les origines *.onrender.com pour le debug
+        if (origin.includes('.onrender.com')) {
+          console.log('⚠️  CORS: Allowing .onrender.com origin');
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
       } else {
+        console.log('⚠️  CORS: Dev mode - allowing');
         callback(null, true); 
       }
     }

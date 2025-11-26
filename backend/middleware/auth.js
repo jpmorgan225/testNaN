@@ -3,11 +3,20 @@ import User from "../models/user.model.js";
 
 export const protect = async (req, res, next) => {
 	try {
+		console.log('🔒 Protect middleware - Cookies reçus:', Object.keys(req.cookies));
+		console.log('🔒 Protect middleware - Headers:', {
+			cookie: req.headers.cookie ? 'présent' : 'absent',
+			origin: req.headers.origin,
+		});
+		
 		const accessToken = req.cookies.accessToken;
 
 		if (!accessToken) {
+			console.log('❌ Protect: Pas de accessToken dans les cookies');
 			return res.status(401).json({ message: "Unauthorized - No access token provided" });
 		}
+		
+		console.log('✅ Protect: accessToken trouvé');
 
 		try {
 			const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);

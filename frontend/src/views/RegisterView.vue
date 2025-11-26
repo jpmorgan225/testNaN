@@ -74,20 +74,27 @@ const handleSubmit = async () => {
   loading.value = true
 
   try {
+    console.log('📝 Début inscription...')
     const result = await auth.register({
       name: name.value,
       email: email.value,
       password: password.value
     })
     
+    console.log('✅ Résultat inscription:', result)
+    console.log('👤 Utilisateur connecté:', auth.user)
+    console.log('🔐 Authentifié:', auth.isAuthenticated)
+    
     if (result?.success) {
+      // Attendre un peu pour que les cookies soient bien stockés
+      await new Promise(resolve => setTimeout(resolve, 100))
       router.push('/groups')
     } else {
       error.value = result?.message || 'Erreur lors de l\'inscription.'
     }
   } catch (err) {
+    console.error('❌ Erreur inscription complète:', err)
     error.value = err?.message || 'Erreur lors de l\'inscription.'
-    console.error('Erreur détaillée:', err)
   } finally {
     loading.value = false
   }

@@ -18,15 +18,32 @@ const storeRefreshToken = async (userId, refreshToken) => {
 };
 
 const setCookies = (res, accessToken, refreshToken) => {
+  const isProduction = process.env.NODE_ENV === 'production';
+  
+  // En production, utiliser 'none' pour permettre les cookies cross-domain
+  // Nécessite secure: true (HTTPS obligatoire)
+  const cookieOptions = {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
+    // Ne pas définir 'domain' pour permettre les cookies cross-domain
+  };
+  
   res.cookie('accessToken', accessToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 15 * 60 * 1000,
+    ...cookieOptions,
+    maxAge: 15 * 60 * 1000, // 15 minutes
   });
+  
   res.cookie('refreshToken', refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 7 * 24 * 60 * 60 * 1000,
+    ...cookieOptions,
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
+  });
+  
+  console.log('🍪 Cookies envoyés:', {
+    secure: cookieOptions.secure,
+    sameSite: cookieOptions.sameSite,
+    httpOnly: cookieOptions.httpOnly,
+    environment: isProduction ? 'production' : 'development'
   });
 };
 
