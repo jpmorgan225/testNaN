@@ -220,8 +220,10 @@ const loadTasks = async () => {
 
 const generateInviteLink = async () => {
   try {
-    const token = await groupStore.generateInviteLink(route.params.id)
-    inviteLink.value = `${window.location.origin}/join/${token}`
+    // Le backend renvoie déjà le lien complet avec FRONTEND_URL
+    const fullLink = await groupStore.generateInviteLink(route.params.id)
+    inviteLink.value = fullLink
+    console.log('🔗 Lien d\'invitation:', inviteLink.value)
   } catch (error) {
     console.error('Erreur génération lien:', error)
   }

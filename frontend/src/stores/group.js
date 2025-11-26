@@ -65,14 +65,11 @@ export const useGroupStore = defineStore('group', () => {
 			console.log('🔗 Génération lien pour groupe:', groupId)
 			const { data } = await api.post(`/api/groups/${groupId}/invite`)
 			console.log('✅ Réponse invite:', data)
-			// Backend renvoie { success: true, data: "http://..." }
-			const link = data?.data || data?.link || data
-			console.log('🔗 Lien généré:', link)
-			// Extraire juste le token de l'URL complète si nécessaire
-			if (typeof link === 'string' && link.includes('/join/')) {
-				return link.split('/join/')[1]
-			}
-			return link
+			// Backend renvoie { success: true, data: "https://testnan-3.onrender.com/join/token" }
+			const fullLink = data?.data || data?.link || data
+			console.log('🔗 Lien complet généré:', fullLink)
+			// Retourner le lien complet (le backend utilise déjà FRONTEND_URL)
+			return fullLink
 		} catch (err) {
 			console.error('❌ Erreur génération lien:', err)
 			error.value = err.response?.data?.message || 'Erreur lors de la génération du lien'
