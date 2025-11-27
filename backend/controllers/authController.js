@@ -87,7 +87,9 @@ export const signup = async (req, res) => {
     console.log('✅ Inscription réussie pour:', email);
     res.status(201).json({ 
       success: true, 
-      data: { _id: user._id, name: user.name, email: user.email } 
+      data: { _id: user._id, name: user.name, email: user.email },
+      // Renvoyer aussi le token pour fallback si les cookies ne fonctionnent pas
+      token: accessToken
     });
   } catch (err) {
     console.error('❌ Erreur inscription complète:', err);
@@ -110,7 +112,12 @@ export const login = async (req, res) => {
     await storeRefreshToken(user._id, refreshToken);
     setCookies(res, accessToken, refreshToken);
 
-    res.json({ success: true, data: { _id: user._id, name: user.name, email: user.email } });
+    res.json({ 
+      success: true, 
+      data: { _id: user._id, name: user.name, email: user.email },
+      // Renvoyer aussi le token pour fallback si les cookies ne fonctionnent pas
+      token: accessToken
+    });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

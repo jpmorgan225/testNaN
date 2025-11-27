@@ -6,13 +6,24 @@ export const protect = async (req, res, next) => {
 		console.log('🔒 Protect middleware - Cookies reçus:', Object.keys(req.cookies));
 		console.log('🔒 Protect middleware - Headers:', {
 			cookie: req.headers.cookie ? 'présent' : 'absent',
+			authorization: req.headers.authorization ? 'présent' : 'absent',
 			origin: req.headers.origin,
 		});
 		
-		const accessToken = req.cookies.accessToken;
+		// Essayer d'abord les cookies, puis les headers Authorization
+		let accessToken = req.cookies.accessToken;
+		
+		// Si pas de cookie, essayer le header Authorization
+		if (!accessToken && req.headers.authorization) {
+			const authHeader = req.headers.authorization;
+			if (authHeader.startsWith('Bearer ')) {
+				accessToken = authHeader.substring(7);
+				console.log('✅ Protect: Token trouvé dans Authorization header');
+			}
+		}
 
 		if (!accessToken) {
-			console.log('❌ Protect: Pas de accessToken dans les cookies');
+			console.log('❌ Protect: Pas de accessToken (ni cookie ni header)');
 			return res.status(401).json({ message: "Unauthorized - No access token provided" });
 		}
 		

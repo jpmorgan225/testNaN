@@ -13,6 +13,12 @@ export const useAuthStore = defineStore('auth', () => {
       console.log('✅ Réponse inscription:', data)
       
       if (data?.success) {
+        // Stocker le token dans localStorage comme fallback si les cookies ne fonctionnent pas
+        if (data?.token) {
+          localStorage.setItem('accessToken', data.token)
+          console.log('💾 Token stocké dans localStorage')
+        }
+        
         // Le backend a placé les cookies, récupérons le profil pour vérifier
         console.log('🔍 Récupération du profil après inscription...')
         try {
@@ -43,6 +49,12 @@ export const useAuthStore = defineStore('auth', () => {
       console.log('✅ Réponse connexion:', data)
       
       if (data?.success) {
+        // Stocker le token dans localStorage comme fallback si les cookies ne fonctionnent pas
+        if (data?.token) {
+          localStorage.setItem('accessToken', data.token)
+          console.log('💾 Token stocké dans localStorage')
+        }
+        
         // Le backend a placé les cookies, récupérons le profil pour vérifier
         console.log('🔍 Récupération du profil après connexion...')
         try {
@@ -74,6 +86,8 @@ export const useAuthStore = defineStore('auth', () => {
     } finally {
       user.value = null
       isAuthenticated.value = false
+      // Supprimer le token du localStorage
+      localStorage.removeItem('accessToken')
     }
   }
 
@@ -93,8 +107,27 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  fetchProfile().catch(() => {
-  })
+  // Au démarrage, essayer de récupérer le profil si un token existe
+  const initAuth = async () => {
+    const token = localStorage.getItem('accessToken')
+    if (token) {
+      console.log('🔍 Token trouvé dans localStorage, récupération du profil...')
+      try {
+        await fetchProfile()
+      } catch (error) {
+        console.error('⚠️ Erreur récupération profil au démarrage:', error)
+        // Si le token est invalide, le supprimer
+        localStorage.removeItem('accessToken')
+      }
+    } else {
+      // Essayer quand même avec les cookies
+      fetchProfile().catch(() => {
+        // Ignorer silencieusement si pas de cookies
+      })
+    }
+  }
+
+  initAuth()
 
   return {
     user,

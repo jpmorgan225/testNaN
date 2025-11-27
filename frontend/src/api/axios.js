@@ -1,6 +1,22 @@
 import axios from 'axios'
 
-export default axios.create({
+const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/',
   withCredentials: true, 
 })
+
+// Intercepteur pour ajouter le token dans les headers si présent dans localStorage
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('accessToken')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
+export default api
