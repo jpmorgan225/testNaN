@@ -71,8 +71,8 @@
             </div>
           </div>
           <div class="task-actions">
-            <button @click="editTask(task)" class="btn-icon"></button>
-            <button @click="confirmDeleteTask(task)" class="btn-icon btn-danger">🗑️</button>
+            <button @click="editTask(task)" class="btn-icon" title="Modifier la tâche">✏️</button>
+            <button @click="confirmDeleteTask(task)" class="btn-icon btn-danger" title="Supprimer la tâche">🗑️</button>
           </div>
         </div>
       </div>
@@ -241,20 +241,31 @@ const copyInviteLink = async () => {
 }
 
 const canRemoveMember = (memberId) => {
-  return authStore.user?._id !== memberId
+  // Vérifier que l'utilisateur est le propriétaire du groupe
+  const isOwner = group.value?.owner?.toString() === authStore.user?._id?.toString()
+  // Ne pas permettre de retirer soi-même
+  const isSelf = authStore.user?._id?.toString() === (typeof memberId === 'string' ? memberId : memberId?.toString())
+  // Seul le propriétaire peut retirer des membres, et il ne peut pas se retirer lui-même
+  return isOwner && !isSelf
 }
 
 const confirmRemoveMember = (member) => {
-  if (confirm(`Retirer ${member.name} du groupe ?`)) {
+  if (confirm(`Êtes-vous sûr de vouloir retirer ${member.name} du groupe ?`)) {
     removeMember(member._id)
   }
 }
 
 const removeMember = async (memberId) => {
   try {
+    console.log('👤 Retrait membre - ID:', memberId)
     await groupStore.removeMember(route.params.id, memberId)
+    // Recharger les données du groupe pour mettre à jour la liste
+    await loadGroupData()
+    console.log('✅ Membre retiré avec succès')
   } catch (error) {
-    alert('Erreur lors du retrait du membre')
+    console.error('❌ Erreur retrait membre:', error)
+    const errorMessage = error.response?.data?.message || error.message || 'Erreur lors du retrait du membre'
+    alert(errorMessage)
   }
 }
 
@@ -536,6 +547,11 @@ watch(showInviteModal, (newVal) => {
   cursor: pointer;
   font-size: 1.2rem;
   padding: 0.25rem;
+  transition: transform 0.2s;
+}
+
+.btn-icon:hover {
+  transform: scale(1.1);
 }
 
 .btn-icon.btn-danger:hover {

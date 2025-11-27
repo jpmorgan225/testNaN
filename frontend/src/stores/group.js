@@ -80,12 +80,20 @@ export const useGroupStore = defineStore('group', () => {
 	const removeMember = async (groupId, userId) => {
 		error.value = ''
 		try {
-			await api.delete(`/api/groups/${groupId}/members/${userId}`)
+			console.log('👤 Retrait membre - Groupe:', groupId, 'User:', userId)
+			const { data } = await api.delete(`/api/groups/${groupId}/members/${userId}`)
+			console.log('✅ Réponse removeMember:', data)
 			// mettre à jour localement
 			if (currentGroup.value) {
-				currentGroup.value.members = (currentGroup.value.members || []).filter(m => m._id !== userId)
+				currentGroup.value.members = (currentGroup.value.members || []).filter(m => {
+					const memberId = typeof m._id === 'string' ? m._id : m._id?.toString()
+					const targetId = typeof userId === 'string' ? userId : userId?.toString()
+					return memberId !== targetId
+				})
 			}
+			return data
 		} catch (err) {
+			console.error('❌ Erreur removeMember:', err)
 			error.value = err.response?.data?.message || 'Erreur lors du retrait du membre'
 			throw err
 		}

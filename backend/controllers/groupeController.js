@@ -31,6 +31,7 @@ export const getGroupById = async (req, res) => {
   try {
     const group = await Group.findById(req.params.id)
       .populate('members', 'name email')
+      .populate('owner', 'name email')
       .populate('tasks');
     if (!group) return res.status(404).json({ success: false, message: 'Groupe non trouvé' });
     res.status(200).json({ success: true, data: group });
@@ -98,18 +99,49 @@ export const joinGroup = async (req, res) => {
 
 export const removeMember = async (req, res) => {
   try {
+    console.log('👤 Retrait membre - Groupe:', req.params.groupId, 'User:', req.params.userId);
+    console.log('👤 Propriétaire actuel:', req.user._id);
+    
     const { groupId, userId } = req.params;
     const group = await Group.findById(groupId);
-    if (!group) return res.status(404).json({ success: false, message: 'Groupe non trouvé' });
+    
+    if (!group) {
+      console.log('❌ Groupe non trouvé');
+      return res.status(404).json({ success: false, message: 'Groupe non trouvé' });
+    }
+    
+    console.log('👥 Propriétaire du groupe:', group.owner.toString());
+    console.log('👥 Membres actuels:', group.members.map(m => m.toString()));
+    
+    // Vérifier que l'utilisateur est le propriétaire
     if (group.owner.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ success: false, message: 'Non autorisé' });
+      console.log('❌ Utilisateur non autorisé (pas propriétaire)');
+      return res.status(403).json({ success: false, message: 'Seul le propriétaire du groupe peut retirer des membres' });
+    }
+    
+    // Vérifier que le membre à retirer existe dans le groupe
+    const userIdStr = userId.toString();
+    const isMember = group.members.some(memberId => memberId.toString() === userIdStr);
+    
+    if (!isMember) {
+      console.log('❌ Membre non trouvé dans le groupe');
+      return res.status(404).json({ success: false, message: 'Ce membre n\'est pas dans ce groupe' });
+    }
+    
+    // Ne pas permettre de retirer le propriétaire
+    if (userIdStr === group.owner.toString()) {
+      console.log('❌ Tentative de retirer le propriétaire');
+      return res.status(400).json({ success: false, message: 'Le propriétaire du groupe ne peut pas être retiré' });
     }
 
-    group.members = group.members.filter(id => id.toString() !== userId);
+    console.log('✅ Retrait du membre...');
+    group.members = group.members.filter(id => id.toString() !== userIdStr);
     await group.save();
 
-    res.status(200).json({ success: true, message: 'Membre retiré' });
+    console.log('✅ Membre retiré avec succès');
+    res.status(200).json({ success: true, message: 'Membre retiré avec succès' });
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    console.error('❌ Erreur removeMember:', err);
+    res.status(500).json({ success: false, message: err.message || 'Erreur lors du retrait du membre' });
   }
 };
