@@ -15,7 +15,7 @@ const routes = [
   { path: '/register', name: 'Register', component: Register },
   { path: '/groups', name: 'Groups', component: Groups, meta: { requireAuth: true } },
   { path: '/groups/:id', name: 'GroupDetail', component: GroupDetail, meta: { requireAuth: true } },
-  { path: '/join/:token', name: 'JoinGroup', component: JoinGroup },
+  { path: '/join/:token', name: 'JoinGroup', component: JoinGroup, meta: { requireAuth: true } },
 ]
 
 const router = createRouter({
@@ -32,8 +32,18 @@ router.beforeEach(async (to) => {
       // ignore
     }
     if (!auth.user) {
+      // Si c'est une route de join, sauvegarder le token pour rejoindre après connexion
+      if (to.name === 'JoinGroup' && to.params.token) {
+        sessionStorage.setItem('pendingInviteToken', to.params.token)
+        return `/login?redirect=/join/${to.params.token}`
+      }
       return '/login'
     }
+  }
+  
+  // Si l'utilisateur est connecté et qu'il y a un token d'invitation en attente, le rejoindre
+  if (auth.user && to.name === 'JoinGroup' && to.params.token) {
+    // Le composant JoinGroup gérera le join
   }
 })
 

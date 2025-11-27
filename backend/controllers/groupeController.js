@@ -61,19 +61,36 @@ export const generateInviteLink = async (req, res) => {
 
 export const joinGroup = async (req, res) => {
   try {
+    console.log('🤝 Rejoindre groupe - token:', req.params.token);
+    console.log('👤 Utilisateur:', req.user._id);
+    
     const { token } = req.params;
     const group = await Group.findOne({ inviteToken: token, inviteExpires: { $gt: Date.now() } });
-    if (!group) return res.status(400).json({ success: false, message: 'Lien invalide ou expiré' });
+    if (!group) {
+      console.log('❌ Lien invalide ou expiré');
+      return res.status(400).json({ success: false, message: 'Lien invalide ou expiré' });
+    }
 
-    if (group.members.includes(req.user._id)) {
+    // Comparer les ObjectIds en les convertissant en String
+    const userIdStr = req.user._id.toString();
+    const isMember = group.members.some(memberId => memberId.toString() === userIdStr);
+    
+    console.log('👥 Membres du groupe:', group.members.map(m => m.toString()));
+    console.log('✅ Est déjà membre?', isMember);
+
+    if (isMember) {
+      console.log('⚠️ Déjà membre du groupe');
       return res.status(400).json({ success: false, message: 'Déjà membre' });
     }
 
+    console.log('✅ Ajout de l\'utilisateur au groupe...');
     group.members.push(req.user._id);
     await group.save();
 
+    console.log('✅ Groupe rejoint avec succès');
     res.status(200).json({ success: true, message: 'Rejoint avec succès', data: group });
   } catch (err) {
+    console.error('❌ Erreur joinGroup:', err);
     res.status(500).json({ success: false, message: err.message });
   }
 };

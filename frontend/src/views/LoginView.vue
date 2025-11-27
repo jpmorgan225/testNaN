@@ -44,9 +44,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth.js'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 const email = ref('')
 const password = ref('')
@@ -55,6 +55,17 @@ const loading = ref(false)
 
 const auth = useAuthStore()
 const router = useRouter()
+const route = useRoute()
+
+onMounted(() => {
+  // Si on vient d'une redirection avec un token d'invitation, le sauvegarder
+  if (route.query.redirect && route.query.redirect.includes('/join/')) {
+    const token = route.query.redirect.split('/join/')[1]
+    if (token) {
+      sessionStorage.setItem('pendingInviteToken', token)
+    }
+  }
+})
 
 const handleSubmit = async () => {
   error.value = ''
@@ -67,7 +78,14 @@ const handleSubmit = async () => {
     })
     
     if (result?.success) {
-      router.push('/groups')
+      // Vérifier s'il y a un token d'invitation en attente
+      const pendingToken = sessionStorage.getItem('pendingInviteToken')
+      if (pendingToken) {
+        sessionStorage.removeItem('pendingInviteToken')
+        router.push(`/join/${pendingToken}`)
+      } else {
+        router.push('/groups')
+      }
     } else {
       error.value = result?.message || 'Erreur de connexion.'
     }

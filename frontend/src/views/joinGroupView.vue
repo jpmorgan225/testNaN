@@ -39,10 +39,12 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useGroupStore } from '@/stores/group.js'
+import { useAuthStore } from '@/stores/auth.js'
 
 const route = useRoute()
 const router = useRouter()
 const groupStore = useGroupStore()
+const auth = useAuthStore()
 
 const loading = ref(false)
 const joining = ref(false)
@@ -50,9 +52,22 @@ const error = ref('')
 const success = ref(false)
 const joinedGroupId = ref(null)
 
-onMounted(() => {
-  // Auto-join si souhaité, sinon afficher confirmation
-  // handleJoin()
+onMounted(async () => {
+  // Vérifier que l'utilisateur est bien connecté
+  if (!auth.user) {
+    try {
+      await auth.fetchProfile()
+    } catch (err) {
+      console.error('Erreur récupération profil:', err)
+      error.value = 'Vous devez être connecté pour rejoindre un groupe'
+      return
+    }
+  }
+  
+  // Si l'utilisateur est connecté, essayer de rejoindre automatiquement
+  if (auth.user) {
+    handleJoin()
+  }
 })
 
 const handleJoin = async () => {
@@ -60,11 +75,23 @@ const handleJoin = async () => {
   error.value = ''
 
   try {
+    console.log('🤝 Tentative de rejoindre le groupe avec token:', route.params.token)
     const group = await groupStore.joinGroup(route.params.token)
+    console.log('✅ Groupe rejoint:', group)
     success.value = true
     joinedGroupId.value = group._id
   } catch (err) {
-    error.value = err.response?.data?.message || 'Lien d\'invitation invalide ou expiré'
+    console.error('❌ Erreur joinGroup:', err)
+    const errorMessage = err.response?.data?.message || err.message || 'Lien d\'invitation invalide ou expiré'
+    
+    // Si c'est une erreur d'authentification, rediriger vers login
+    if (err.response?.status === 401) {
+      sessionStorage.setItem('pendingInviteToken', route.params.token)
+      router.push(`/login?redirect=/join/${route.params.token}`)
+      return
+    }
+    
+    error.value = errorMessage
   } finally {
     joining.value = false
   }

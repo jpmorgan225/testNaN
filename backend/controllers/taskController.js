@@ -21,7 +21,11 @@ export const createTask = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Groupe non trouvé' });
     }
     
-    if (!group.members.includes(req.user._id)) {
+    // Comparer les ObjectIds en les convertissant en String
+    const userIdStr = req.user._id.toString();
+    const isMember = group.members.some(memberId => memberId.toString() === userIdStr);
+    
+    if (!isMember) {
       console.log('❌ Utilisateur non membre du groupe');
       return res.status(403).json({ success: false, message: 'Non membre du groupe' });
     }
@@ -60,11 +64,30 @@ export const getTasksByGroup = async (req, res) => {
 
 export const updateTask = async (req, res) => {
   try {
+    console.log('✏️ Mise à jour tâche - ID:', req.params.id);
+    console.log('👤 Utilisateur:', req.user._id);
+    
     const task = await Task.findById(req.params.id);
-    if (!task) return res.status(404).json({ success: false, message: 'Tâche non trouvée' });
+    if (!task) {
+      console.log('❌ Tâche non trouvée');
+      return res.status(404).json({ success: false, message: 'Tâche non trouvée' });
+    }
 
     const group = await Group.findById(task.group);
-    if (!group.members.includes(req.user._id)) {
+    if (!group) {
+      console.log('❌ Groupe non trouvé');
+      return res.status(404).json({ success: false, message: 'Groupe non trouvé' });
+    }
+
+    // Comparer les ObjectIds en les convertissant en String
+    const userIdStr = req.user._id.toString();
+    const isMember = group.members.some(memberId => memberId.toString() === userIdStr);
+    
+    console.log('👥 Membres du groupe:', group.members.map(m => m.toString()));
+    console.log('✅ Est membre?', isMember);
+
+    if (!isMember) {
+      console.log('❌ Utilisateur non membre du groupe');
       return res.status(403).json({ success: false, message: 'Non membre du groupe' });
     }
 
@@ -82,20 +105,43 @@ export const updateTask = async (req, res) => {
 
 export const deleteTask = async (req, res) => {
   try {
+    console.log('🗑️ Suppression tâche - ID:', req.params.id);
+    console.log('👤 Utilisateur:', req.user._id);
+    
     const task = await Task.findById(req.params.id);
-    if (!task) return res.status(404).json({ success: false, message: 'Tâche non trouvée' });
+    if (!task) {
+      console.log('❌ Tâche non trouvée');
+      return res.status(404).json({ success: false, message: 'Tâche non trouvée' });
+    }
 
+    console.log('🔍 Recherche groupe:', task.group);
     const group = await Group.findById(task.group);
-    if (!group.members.includes(req.user._id)) {
+    if (!group) {
+      console.log('❌ Groupe non trouvé');
+      return res.status(404).json({ success: false, message: 'Groupe non trouvé' });
+    }
+
+    // Comparer les ObjectIds en les convertissant en String
+    const userIdStr = req.user._id.toString();
+    const isMember = group.members.some(memberId => memberId.toString() === userIdStr);
+    
+    console.log('👥 Membres du groupe:', group.members.map(m => m.toString()));
+    console.log('✅ Est membre?', isMember);
+
+    if (!isMember) {
+      console.log('❌ Utilisateur non membre du groupe');
       return res.status(403).json({ success: false, message: 'Non membre du groupe' });
     }
 
+    console.log('✅ Suppression de la tâche...');
     await Task.deleteOne({ _id: task._id });
     group.tasks.pull(task._id);
     await group.save();
 
+    console.log('✅ Tâche supprimée avec succès');
     res.status(200).json({ success: true, message: 'Tâche supprimée' });
   } catch (err) {
+    console.error('❌ Erreur suppression tâche:', err);
     res.status(500).json({ success: false, message: err.message });
   }
 };

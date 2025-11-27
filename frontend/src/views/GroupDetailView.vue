@@ -316,10 +316,14 @@ const confirmDeleteTask = (task) => {
 
 const deleteTask = async (taskId) => {
   try {
+    console.log('🗑️ Suppression tâche:', taskId)
     await taskStore.deleteTask(taskId)
     tasks.value = tasks.value.filter(t => t._id !== taskId)
+    console.log('✅ Tâche supprimée avec succès')
   } catch (error) {
-    alert('Erreur lors de la suppression')
+    console.error('❌ Erreur suppression:', error)
+    const errorMessage = error.response?.data?.message || error.message || 'Erreur lors de la suppression'
+    alert(errorMessage)
   }
 }
 

@@ -53,8 +53,12 @@ export const useTaskStore = defineStore('task', () => {
 	const deleteTask = async (taskId) => {
 		error.value = ''
 		try {
-			await api.delete(`/api/tasks/${taskId}`)
+			console.log('🗑️ Suppression tâche - ID:', taskId)
+			const { data } = await api.delete(`/api/tasks/${taskId}`)
+			console.log('✅ Réponse suppression:', data)
+			return data
 		} catch (err) {
+			console.error('❌ Erreur suppression tâche:', err)
 			error.value = err.response?.data?.message || 'Erreur lors de la suppression de la tâche'
 			throw err
 		}
