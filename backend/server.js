@@ -21,34 +21,32 @@ const allowedOrigins = [
   'http://localhost:3000'
 ].filter(Boolean);
 
-console.log('🌐 Allowed CORS origins:', allowedOrigins);
-console.log('🌐 FRONTEND_URL env:', process.env.FRONTEND_URL);
+console.log(' Allowed CORS origins:', allowedOrigins);
+console.log(' FRONTEND_URL env:', process.env.FRONTEND_URL);
 
 app.use(cors({
   origin: (origin, callback) => {
-    console.log('🔍 CORS check - Request origin:', origin);
+    console.log(' CORS check - Request origin:', origin);
     
     if (!origin) {
-      console.log('✅ CORS: No origin - allowing');
+      console.log(' CORS: No origin - allowing');
       return callback(null, true);
     }
     
     if (allowedOrigins.includes(origin)) {
-      console.log('✅ CORS: Origin allowed');
+      console.log(' CORS: Origin allowed');
       callback(null, true);
     } else {
-      console.log('❌ CORS: Origin NOT in allowed list:', origin);
-      // En production, être plus permissif pour le debug
+      console.log(' CORS: Origin NOT in allowed list:', origin);
       if (process.env.NODE_ENV === 'production') {
-        // Autoriser toutes les origines *.onrender.com pour le debug
         if (origin.includes('.onrender.com')) {
-          console.log('⚠️  CORS: Allowing .onrender.com origin');
+          console.log('  CORS: Allowing .onrender.com origin');
           callback(null, true);
         } else {
           callback(new Error('Not allowed by CORS'));
         }
       } else {
-        console.log('⚠️  CORS: Dev mode - allowing');
+        console.log('  CORS: Dev mode - allowing');
         callback(null, true); 
       }
     }
@@ -66,7 +64,7 @@ app.use('/api/tasks', taskRoutes);
 app.get('/', (_req, res) => {
   res.json({
     status: 'ok',
-    message: 'testNaN MERN API 🚀',
+    message: 'testNaN MERN API ',
     environment: process.env.NODE_ENV || 'development'
   });
 });
@@ -76,7 +74,7 @@ app.get('/health', (_req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  console.error('❌ Erreur:', err);
+  console.error(' Erreur:', err);
   res.status(err.status || 500).json({
     success: false,
     message: err.message || 'Erreur serveur',
@@ -87,7 +85,7 @@ app.use((err, req, res, next) => {
 const connectDB = async (retries = 5) => {
   for (let i = 0; i < retries; i++) {
     try {
-      console.log(`🔄 Tentative de connexion MongoDB (${i + 1}/${retries})...`);
+      console.log(` Tentative de connexion MongoDB (${i + 1}/${retries})...`);
       
       if (!process.env.MONGO_URI) {
         throw new Error('MONGO_URI non défini dans les variables d\'environnement');
@@ -101,10 +99,10 @@ const connectDB = async (retries = 5) => {
       console.log('✅ MongoDB connecté avec succès');
       return;
     } catch (err) {
-      console.error(`❌ Erreur connexion MongoDB (tentative ${i + 1}):`, err.message);
+      console.error(` Erreur connexion MongoDB (tentative ${i + 1}):`, err.message);
       
       if (i === retries - 1) {
-        console.error('💀 Impossible de se connecter à MongoDB après plusieurs tentatives');
+        console.error(' Impossible de se connecter à MongoDB après plusieurs tentatives');
         throw err;
       }
       
@@ -119,27 +117,27 @@ const startServer = async () => {
     await connectDB();
 
     app.listen(PORT, '0.0.0.0', () => {
-      console.log(`🚀 Serveur démarré sur le port ${PORT}`);
-      console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL || 'non défini'}`);
+      console.log(` Serveur démarré sur le port ${PORT}`);
+      console.log(` Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(` Frontend URL: ${process.env.FRONTEND_URL || 'non défini'}`);
     });
   } catch (err) {
-    console.error('💀 Erreur fatale au démarrage:', err);
+    console.error(' Erreur fatale au démarrage:', err);
     process.exit(1);
   }
 };
 
 process.on('SIGINT', async () => {
-  console.log('\n⚠️  Signal SIGINT reçu');
+  console.log('\n  Signal SIGINT reçu');
   await mongoose.connection.close();
-  console.log('✅ Connexion MongoDB fermée');
+  console.log('Connexion MongoDB fermée');
   process.exit(0);
 });
 
 process.on('SIGTERM', async () => {
-  console.log('\n⚠️  Signal SIGTERM reçu');
+  console.log('\n Signal SIGTERM reçu');
   await mongoose.connection.close();
-  console.log('✅ Connexion MongoDB fermée');
+  console.log(' Connexion MongoDB fermée');
   process.exit(0);
 });
 

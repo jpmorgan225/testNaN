@@ -11,11 +11,10 @@ import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Middleware pour gérer les erreurs de validation
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    console.log('❌ Erreurs de validation:', errors.array());
+    console.log(' Erreurs de validation:', errors.array());
     return res.status(400).json({ 
       success: false, 
       message: 'Erreur de validation',

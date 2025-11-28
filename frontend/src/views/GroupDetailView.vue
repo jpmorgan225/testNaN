@@ -14,6 +14,10 @@
     <!-- Membres -->
     <div class="section">
       <h3> Membres ({{ group.members?.length || 0 }})</h3>
+      <!-- Debug info (à retirer en production) -->
+      <div v-if="false" style="font-size: 0.8rem; color: #666; margin-bottom: 0.5rem;">
+        Debug: Owner={{ group.owner?._id || group.owner }}, User={{ authStore.user?._id }}, IsOwner={{ (group.owner?._id || group.owner)?.toString() === authStore.user?._id?.toString() }}
+      </div>
       <div class="members-list">
         <div 
           v-for="member in group.members" 
@@ -26,6 +30,7 @@
             v-if="canRemoveMember(member._id)"
             @click="confirmRemoveMember(member)"
             class="btn-remove"
+            title="Retirer ce membre"
           >
             ✕
           </button>
@@ -200,6 +205,14 @@ onMounted(async () => {
 const loadGroupData = async () => {
   try {
     await groupStore.fetchGroupById(route.params.id)
+    console.log('📦 Groupe chargé:', {
+      id: group.value?._id,
+      name: group.value?.name,
+      owner: group.value?.owner,
+      ownerId: group.value?.owner?._id || group.value?.owner,
+      currentUserId: authStore.user?._id,
+      members: group.value?.members?.length
+    })
     await loadTasks()
   } catch (error) {
     console.error('Erreur chargement groupe:', error)
@@ -242,9 +255,25 @@ const copyInviteLink = async () => {
 
 const canRemoveMember = (memberId) => {
   // Vérifier que l'utilisateur est le propriétaire du groupe
-  const isOwner = group.value?.owner?.toString() === authStore.user?._id?.toString()
+  // owner peut être un ObjectId ou un objet peuplé avec _id
+  const ownerId = group.value?.owner?._id || group.value?.owner
+  const ownerIdStr = ownerId?.toString()
+  const userIdStr = authStore.user?._id?.toString()
+  const isOwner = ownerIdStr === userIdStr
+  
   // Ne pas permettre de retirer soi-même
-  const isSelf = authStore.user?._id?.toString() === (typeof memberId === 'string' ? memberId : memberId?.toString())
+  const memberIdStr = typeof memberId === 'string' ? memberId : (memberId?._id || memberId)?.toString()
+  const isSelf = userIdStr === memberIdStr
+  
+  console.log('🔍 canRemoveMember check:', {
+    ownerId: ownerIdStr,
+    userId: userIdStr,
+    memberId: memberIdStr,
+    isOwner,
+    isSelf,
+    canRemove: isOwner && !isSelf
+  })
+  
   // Seul le propriétaire peut retirer des membres, et il ne peut pas se retirer lui-même
   return isOwner && !isSelf
 }

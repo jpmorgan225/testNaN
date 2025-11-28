@@ -13,12 +13,10 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-// Route de test
 app.get('/', (req, res) => {
   res.json({ message: '✅ Serveur fonctionne !' });
 });
 
-// Route test inscription (SANS MongoDB)
 app.post('/api/auth/register', (req, res) => {
   console.log('📝 Données reçues:', req.body);
   
@@ -31,7 +29,6 @@ app.post('/api/auth/register', (req, res) => {
     });
   }
   
-  // Simuler une inscription réussie
   console.log('✅ Inscription simulée réussie');
   res.status(201).json({
     success: true,
@@ -43,9 +40,8 @@ app.post('/api/auth/register', (req, res) => {
   });
 });
 
-// Route test connexion
 app.post('/api/auth/login', (req, res) => {
-  console.log('🔐 Tentative connexion:', req.body);
+  console.log('Tentative connexion:', req.body);
   res.json({
     success: true,
     data: {
@@ -56,7 +52,6 @@ app.post('/api/auth/login', (req, res) => {
   });
 });
 
-// Route profil
 app.get('/api/auth/me', (req, res) => {
   res.json({
     success: true,
@@ -69,9 +64,9 @@ app.get('/api/auth/me', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🧪 Serveur de TEST démarré sur http://localhost:${PORT}`);
-  console.log('📝 Ce serveur fonctionne SANS MongoDB');
-  console.log('✅ Testez l\'inscription depuis le frontend');
+  console.log(` Serveur de TEST démarré sur http://localhost:${PORT}`);
+  console.log(' Ce serveur fonctionne SANS MongoDB');
+  console.log(' Testez l\'inscription depuis le frontend');
 });
 
 

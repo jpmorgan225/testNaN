@@ -20,26 +20,24 @@ const storeRefreshToken = async (userId, refreshToken) => {
 const setCookies = (res, accessToken, refreshToken) => {
   const isProduction = process.env.NODE_ENV === 'production';
   
-  // En production, utiliser 'none' pour permettre les cookies cross-domain
-  // Nécessite secure: true (HTTPS obligatoire)
+
   const cookieOptions = {
     httpOnly: true,
     secure: isProduction,
     sameSite: isProduction ? 'none' : 'lax',
-    // Ne pas définir 'domain' pour permettre les cookies cross-domain
   };
   
   res.cookie('accessToken', accessToken, {
     ...cookieOptions,
-    maxAge: 15 * 60 * 1000, // 15 minutes
+    maxAge: 15 * 60 * 1000, 
   });
   
   res.cookie('refreshToken', refreshToken, {
     ...cookieOptions,
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
+    maxAge: 7 * 24 * 60 * 60 * 1000, 
   });
   
-  console.log('🍪 Cookies envoyés:', {
+  console.log(' Cookies envoyés:', {
     secure: cookieOptions.secure,
     sameSite: cookieOptions.sameSite,
     httpOnly: cookieOptions.httpOnly,
@@ -49,50 +47,49 @@ const setCookies = (res, accessToken, refreshToken) => {
 
 export const signup = async (req, res) => {
   try {
-    console.log('📝 Tentative inscription:', req.body);
+    console.log(' Tentative inscription:', req.body);
     
     const { email, password, name } = req.body;
     
     if (!name || !email || !password) {
-      console.log('❌ Données manquantes:', { name, email, hasPassword: !!password });
+      console.log(' Données manquantes:', { name, email, hasPassword: !!password });
       return res.status(400).json({ 
         success: false, 
         message: 'Nom, email et mot de passe requis' 
       });
     }
 
-    console.log('🔍 Vérification email existant:', email);
+    console.log(' Vérification email existant:', email);
     const exists = await User.findOne({ email });
     if (exists) {
-      console.log('❌ Email déjà utilisé');
+      console.log(' Email déjà utilisé');
       return res.status(400).json({ 
         success: false, 
         message: 'Cet email est déjà utilisé' 
       });
     }
 
-    console.log('👤 Création utilisateur...');
+    console.log(' Création utilisateur...');
     const user = await User.create({ name, email, password });
-    console.log('✅ Utilisateur créé:', user._id);
+    console.log(' Utilisateur créé:', user._id);
 
-    console.log('🔑 Génération tokens...');
+    console.log(' Génération tokens...');
     const { accessToken, refreshToken } = generateTokens(user._id);
     
-    console.log('💾 Stockage refreshToken...');
+    console.log(' Stockage refreshToken...');
     await storeRefreshToken(user._id, refreshToken);
     
-    console.log('🍪 Envoi cookies...');
+    console.log(' Envoi cookies...');
     setCookies(res, accessToken, refreshToken);
 
-    console.log('✅ Inscription réussie pour:', email);
+    console.log(' Inscription réussie pour:', email);
     res.status(201).json({ 
       success: true, 
       data: { _id: user._id, name: user.name, email: user.email },
-      // Renvoyer aussi le token pour fallback si les cookies ne fonctionnent pas
       token: accessToken
     });
   } catch (err) {
-    console.error('❌ Erreur inscription complète:', err);
+    console.error(' Erreur inscription complète:', err);
     console.error('Stack:', err.stack);
     res.status(500).json({ 
       success: false, 
@@ -115,7 +112,6 @@ export const login = async (req, res) => {
     res.json({ 
       success: true, 
       data: { _id: user._id, name: user.name, email: user.email },
-      // Renvoyer aussi le token pour fallback si les cookies ne fonctionnent pas
       token: accessToken
     });
   } catch (err) {
