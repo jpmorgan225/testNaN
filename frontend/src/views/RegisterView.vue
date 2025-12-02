@@ -1,7 +1,7 @@
 <template>
   <div class="auth-container">
     <div class="auth-card">
-      <h2> Inscription</h2>
+      <h2>Inscription</h2>
       
       <form @submit.prevent="handleSubmit">
         <div class="form-group">
@@ -85,16 +85,16 @@ const handleSubmit = async () => {
   loading.value = true
 
   try {
-    console.log('📝 Début inscription...')
+    console.log('Début inscription...')
     const result = await auth.register({
       name: name.value,
       email: email.value,
       password: password.value
     })
     
-    console.log('✅ Résultat inscription:', result)
-    console.log('👤 Utilisateur connecté:', auth.user)
-    console.log('🔐 Authentifié:', auth.isAuthenticated)
+    console.log('Résultat inscription:', result)
+    console.log('Utilisateur connecté:', auth.user)
+    console.log('Authentifié:', auth.isAuthenticated)
     
     if (result?.success) {
       // Attendre un peu pour que les cookies soient bien stockés
@@ -112,7 +112,7 @@ const handleSubmit = async () => {
       error.value = result?.message || 'Erreur lors de l\'inscription.'
     }
   } catch (err) {
-    console.error('❌ Erreur inscription complète:', err)
+    console.error('Erreur inscription complète:', err)
     error.value = err?.message || 'Erreur lors de l\'inscription.'
   } finally {
     loading.value = false

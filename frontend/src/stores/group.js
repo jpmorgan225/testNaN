@@ -28,15 +28,15 @@ export const useGroupStore = defineStore('group', () => {
 	const createGroup = async (payload) => {
 		error.value = ''
 		try {
-			console.log('📝 Création groupe:', payload)
+			console.log('Création groupe:', payload)
 			const { data } = await api.post('/api/groups', payload)
-			console.log('✅ Réponse création:', data)
+			console.log('Réponse création:', data)
 			// Backend renvoie { success: true, data: group }
 			const newGroup = data?.data || data
 			groups.value = [newGroup, ...groups.value]
 			return newGroup
 		} catch (err) {
-			console.error('❌ Erreur création groupe:', err)
+			console.error('Erreur création groupe:', err)
 			error.value = err.response?.data?.message || 'Erreur lors de la création du groupe'
 			throw err
 		}
@@ -62,16 +62,16 @@ export const useGroupStore = defineStore('group', () => {
 	const generateInviteLink = async (groupId) => {
 		error.value = ''
 		try {
-			console.log('🔗 Génération lien pour groupe:', groupId)
+			console.log('Génération lien pour groupe:', groupId)
 			const { data } = await api.post(`/api/groups/${groupId}/invite`)
-			console.log('✅ Réponse invite:', data)
+			console.log('Réponse invite:', data)
 			// Backend renvoie { success: true, data: "https://testnan-3.onrender.com/join/token" }
 			const fullLink = data?.data || data?.link || data
-			console.log('🔗 Lien complet généré:', fullLink)
+			console.log('Lien complet généré:', fullLink)
 			// Retourner le lien complet (le backend utilise déjà FRONTEND_URL)
 			return fullLink
 		} catch (err) {
-			console.error('❌ Erreur génération lien:', err)
+			console.error('Erreur génération lien:', err)
 			error.value = err.response?.data?.message || 'Erreur lors de la génération du lien'
 			throw err
 		}
@@ -80,9 +80,9 @@ export const useGroupStore = defineStore('group', () => {
 	const removeMember = async (groupId, userId) => {
 		error.value = ''
 		try {
-			console.log('👤 Retrait membre - Groupe:', groupId, 'User:', userId)
+			console.log('Retrait membre - Groupe:', groupId, 'User:', userId)
 			const { data } = await api.delete(`/api/groups/${groupId}/members/${userId}`)
-			console.log('✅ Réponse removeMember:', data)
+			console.log('Réponse removeMember:', data)
 			// mettre à jour localement
 			if (currentGroup.value) {
 				currentGroup.value.members = (currentGroup.value.members || []).filter(m => {
@@ -93,7 +93,7 @@ export const useGroupStore = defineStore('group', () => {
 			}
 			return data
 		} catch (err) {
-			console.error('❌ Erreur removeMember:', err)
+			console.error('Erreur removeMember:', err)
 			error.value = err.response?.data?.message || 'Erreur lors du retrait du membre'
 			throw err
 		}
@@ -102,9 +102,9 @@ export const useGroupStore = defineStore('group', () => {
 	const joinGroup = async (token) => {
 		error.value = ''
 		try {
-			console.log('🔗 Tentative de rejoindre avec token:', token)
+			console.log('Tentative de rejoindre avec token:', token)
 			const { data } = await api.get(`/api/groups/join/${token}`)
-			console.log('✅ Réponse joinGroup:', data)
+			console.log('Réponse joinGroup:', data)
 			// Backend renvoie { success: true, message: "...", data: group }
 			const group = data?.data || data
 			if (group?._id) {
@@ -116,7 +116,7 @@ export const useGroupStore = defineStore('group', () => {
 			}
 			return group
 		} catch (err) {
-			console.error('❌ Erreur joinGroup:', err)
+			console.error('Erreur joinGroup:', err)
 			error.value = err.response?.data?.message || 'Erreur lors de la jonction au groupe'
 			throw err
 		}

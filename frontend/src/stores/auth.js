@@ -8,25 +8,25 @@ export const useAuthStore = defineStore('auth', () => {
 
   const register = async (userData) => {
     try {
-      console.log('📝 Inscription en cours...')
+      console.log('Inscription en cours...')
       const { data } = await api.post('/api/auth/register', userData)
-      console.log('✅ Réponse inscription:', data)
+      console.log('Réponse inscription:', data)
       
       if (data?.success) {
         // Stocker le token dans localStorage comme fallback si les cookies ne fonctionnent pas
         if (data?.token) {
           localStorage.setItem('accessToken', data.token)
-          console.log('💾 Token stocké dans localStorage')
+          console.log('Token stocké dans localStorage')
         }
         
         // Le backend a placé les cookies, récupérons le profil pour vérifier
-        console.log('🔍 Récupération du profil après inscription...')
+        console.log('Récupération du profil après inscription...')
         try {
           const profile = await fetchProfile()
-          console.log('✅ Profil récupéré:', profile)
+          console.log('Profil récupéré:', profile)
           return { success: true, data: profile }
         } catch (profileError) {
-          console.error('⚠️ Erreur récupération profil:', profileError)
+          console.error('Erreur récupération profil:', profileError)
           // Si le profil échoue, utiliser les données de l'inscription
           if (data?.data) {
             user.value = data.data
@@ -37,32 +37,32 @@ export const useAuthStore = defineStore('auth', () => {
       }
       return data
     } catch (error) {
-      console.error('❌ Erreur inscription:', error)
+      console.error('Erreur inscription:', error)
       throw error.response?.data || error
     }
   }
 
   const login = async (credentials) => {
     try {
-      console.log('🔐 Connexion en cours...')
+      console.log('Connexion en cours...')
       const { data } = await api.post('/api/auth/login', credentials)
-      console.log('✅ Réponse connexion:', data)
+      console.log('Réponse connexion:', data)
       
       if (data?.success) {
         // Stocker le token dans localStorage comme fallback si les cookies ne fonctionnent pas
         if (data?.token) {
           localStorage.setItem('accessToken', data.token)
-          console.log('💾 Token stocké dans localStorage')
+          console.log('Token stocké dans localStorage')
         }
         
         // Le backend a placé les cookies, récupérons le profil pour vérifier
-        console.log('🔍 Récupération du profil après connexion...')
+        console.log('Récupération du profil après connexion...')
         try {
           const profile = await fetchProfile()
-          console.log('✅ Profil récupéré:', profile)
+          console.log('Profil récupéré:', profile)
           return { success: true, data: profile }
         } catch (profileError) {
-          console.error('⚠️ Erreur récupération profil:', profileError)
+          console.error('Erreur récupération profil:', profileError)
           // Si le profil échoue, utiliser les données de la connexion
           if (data?.data) {
             user.value = data.data
@@ -73,7 +73,7 @@ export const useAuthStore = defineStore('auth', () => {
       }
       return data
     } catch (error) {
-      console.error('❌ Erreur connexion:', error)
+      console.error('Erreur connexion:', error)
       throw error.response?.data || error
     }
   }
@@ -111,11 +111,11 @@ export const useAuthStore = defineStore('auth', () => {
   const initAuth = async () => {
     const token = localStorage.getItem('accessToken')
     if (token) {
-      console.log('🔍 Token trouvé dans localStorage, récupération du profil...')
+      console.log('Token trouvé dans localStorage, récupération du profil...')
       try {
         await fetchProfile()
       } catch (error) {
-        console.error('⚠️ Erreur récupération profil au démarrage:', error)
+        console.error('Erreur récupération profil au démarrage:', error)
         // Si le token est invalide, le supprimer
         localStorage.removeItem('accessToken')
       }

@@ -6,7 +6,7 @@
       </div>
 
       <div v-else-if="error" class="error-state">
-        <h2> Erreur</h2>
+        <h2>Erreur</h2>
         <p>{{ error }}</p>
         <button @click="goToGroups" class="btn-primary">
           Retour à mes groupes
@@ -14,7 +14,7 @@
       </div>
 
       <div v-else-if="success" class="success-state">
-        <h2> Félicitations !</h2>
+        <h2>Félicitations !</h2>
         <p>Vous avez rejoint le groupe avec succès.</p>
         <button @click="goToGroup" class="btn-primary">
           Voir le groupe
@@ -75,13 +75,13 @@ const handleJoin = async () => {
   error.value = ''
 
   try {
-    console.log('🤝 Tentative de rejoindre le groupe avec token:', route.params.token)
+    console.log('Tentative de rejoindre le groupe avec token:', route.params.token)
     const group = await groupStore.joinGroup(route.params.token)
-    console.log('✅ Groupe rejoint:', group)
+    console.log('Groupe rejoint:', group)
     success.value = true
     joinedGroupId.value = group._id
   } catch (err) {
-    console.error('❌ Erreur joinGroup:', err)
+    console.error('Erreur joinGroup:', err)
     const errorMessage = err.response?.data?.message || err.message || 'Lien d\'invitation invalide ou expiré'
     
     // Si c'est une erreur d'authentification, rediriger vers login

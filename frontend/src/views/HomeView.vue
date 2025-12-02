@@ -26,11 +26,11 @@
           <div class="card-text">Groupes</div>
         </div>
         <div class="floating-card card-2">
-          <div class="card-icon">📋</div>
+          <div class="card-icon"></div>
           <div class="card-text">Tâches</div>
         </div>
         <div class="floating-card card-3">
-          <div class="card-icon">✅</div>
+          <div class="card-icon"></div>
           <div class="card-text">Suivi</div>
         </div>
       </div>
@@ -51,7 +51,7 @@
           <p>Assignez des tâches, définissez des priorités et suivez la progression en temps réel.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">🔗</div>
+          <div class="feature-icon"></div>
           <h3>Invitations faciles</h3>
           <p>Partagez des liens d'invitation sécurisés pour ajouter rapidement de nouveaux membres.</p>
         </div>
@@ -100,7 +100,6 @@ export default {
 }
 
 .hero-content {
-  animation: fadeInUp 0.8s ease-out;
 }
 
 .hero-title {
@@ -169,7 +168,6 @@ export default {
 .hero-visual {
   position: relative;
   height: 400px;
-  animation: fadeIn 1s ease-out;
 }
 
 .floating-card {
@@ -182,25 +180,21 @@ export default {
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-  animation: float 3s ease-in-out infinite;
 }
 
 .card-1 {
   top: 20%;
   left: 10%;
-  animation-delay: 0s;
 }
 
 .card-2 {
   top: 50%;
   right: 10%;
-  animation-delay: 0.5s;
 }
 
 .card-3 {
   bottom: 10%;
   left: 30%;
-  animation-delay: 1s;
 }
 
 .card-icon {
@@ -303,35 +297,6 @@ export default {
   box-shadow: 0 6px 30px rgba(0, 0, 0, 0.3);
 }
 
-/* Animations */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-}
 
 /* Responsive */
 @media (max-width: 968px) {

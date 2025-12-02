@@ -22,7 +22,7 @@ export const protect = async (req, res, next) => {
 
 		if (!accessToken) {
 			console.log(' Protect: Pas de accessToken (ni cookie ni header)');
-			return res.status(401).json({ message: "Unauthorized - No access token provided" });
+			return res.status(401).json({ message: "Non autorisé - Aucun token d'accès fourni" });
 		}
 		
 		console.log(' Protect: accessToken trouvé');
@@ -40,12 +40,12 @@ export const protect = async (req, res, next) => {
 			next();
 		} catch (error) {
 			if (error.name === "TokenExpiredError") {
-				return res.status(401).json({ message: "Unauthorized - Access token expired" });
+				return res.status(401).json({ message: "Non autorisé - Token d'accès expiré" });
 			}
 			throw error;
 		}
 	} catch (error) {
 		console.log("Error in protectRoute middleware", error.message);
-		return res.status(401).json({ message: "Unauthorized - Invalid access token" });
+		return res.status(401).json({ message: "Non autorisé - Token d'accès invalide" });
 	}
 };

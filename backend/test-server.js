@@ -14,11 +14,11 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get('/', (req, res) => {
-  res.json({ message: '✅ Serveur fonctionne !' });
+  res.json({ message: 'Serveur fonctionne !' });
 });
 
 app.post('/api/auth/register', (req, res) => {
-  console.log('📝 Données reçues:', req.body);
+  console.log('Données reçues:', req.body);
   
   const { name, email, password } = req.body;
   
@@ -29,7 +29,7 @@ app.post('/api/auth/register', (req, res) => {
     });
   }
   
-  console.log('✅ Inscription simulée réussie');
+  console.log('Inscription simulée réussie');
   res.status(201).json({
     success: true,
     data: {

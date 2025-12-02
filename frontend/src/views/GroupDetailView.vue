@@ -7,13 +7,13 @@
         <p class="group-desc">{{ group.description }}</p>
       </div>
       <button @click="showInviteModal = true" class="btn-primary">
-        🔗 Inviter des membres
+        Inviter des membres
       </button>
     </div>
 
     <!-- Membres -->
-    <div class="section">
-      <h3> Membres ({{ group.members?.length || 0 }})</h3>
+      <div class="section">
+        <h3>Membres ({{ group.members?.length || 0 }})</h3>
       <!-- Debug info (à retirer en production) -->
       <div v-if="false" style="font-size: 0.8rem; color: #666; margin-bottom: 0.5rem;">
         Debug: Owner={{ group.owner?._id || group.owner }}, User={{ authStore.user?._id }}, IsOwner={{ (group.owner?._id || group.owner)?.toString() === authStore.user?._id?.toString() }}
@@ -41,9 +41,9 @@
     <!-- Tâches -->
     <div class="section">
       <div class="section-header">
-        <h3> Tâches ({{ tasks.length }})</h3>
+        <h3>Tâches ({{ tasks.length }})</h3>
         <button @click="showTaskModal = true" class="btn-primary">
-           Nouvelle tâche
+          Nouvelle tâche
         </button>
       </div>
 
@@ -76,8 +76,8 @@
             </div>
           </div>
           <div class="task-actions">
-            <button @click="editTask(task)" class="btn-icon" title="Modifier la tâche">✏️</button>
-            <button @click="confirmDeleteTask(task)" class="btn-icon btn-danger" title="Supprimer la tâche">🗑️</button>
+            <button @click="editTask(task)" class="btn-icon" title="Modifier la tâche">Modifier</button>
+            <button @click="confirmDeleteTask(task)" class="btn-icon btn-danger" title="Supprimer la tâche">Supprimer</button>
           </div>
         </div>
       </div>
@@ -95,7 +95,7 @@
             readonly 
           />
           <button @click="copyInviteLink" class="btn-copy">
-            {{ copied ? '✓ Copié' : ' Copier' }}
+            {{ copied ? 'Copié' : 'Copier' }}
           </button>
         </div>
         <button @click="showInviteModal = false" class="btn-secondary">
@@ -205,7 +205,7 @@ onMounted(async () => {
 const loadGroupData = async () => {
   try {
     await groupStore.fetchGroupById(route.params.id)
-    console.log('📦 Groupe chargé:', {
+    console.log('Groupe chargé:', {
       id: group.value?._id,
       name: group.value?.name,
       owner: group.value?.owner,
@@ -236,7 +236,7 @@ const generateInviteLink = async () => {
     // Le backend renvoie déjà le lien complet avec FRONTEND_URL
     const fullLink = await groupStore.generateInviteLink(route.params.id)
     inviteLink.value = fullLink
-    console.log('🔗 Lien d\'invitation:', inviteLink.value)
+    console.log('Lien d\'invitation:', inviteLink.value)
   } catch (error) {
     console.error('Erreur génération lien:', error)
   }
@@ -265,7 +265,7 @@ const canRemoveMember = (memberId) => {
   const memberIdStr = typeof memberId === 'string' ? memberId : (memberId?._id || memberId)?.toString()
   const isSelf = userIdStr === memberIdStr
   
-  console.log('🔍 canRemoveMember check:', {
+  console.log('canRemoveMember check:', {
     ownerId: ownerIdStr,
     userId: userIdStr,
     memberId: memberIdStr,
@@ -286,13 +286,13 @@ const confirmRemoveMember = (member) => {
 
 const removeMember = async (memberId) => {
   try {
-    console.log('👤 Retrait membre - ID:', memberId)
+    console.log('Retrait membre - ID:', memberId)
     await groupStore.removeMember(route.params.id, memberId)
     // Recharger les données du groupe pour mettre à jour la liste
     await loadGroupData()
-    console.log('✅ Membre retiré avec succès')
+    console.log('Membre retiré avec succès')
   } catch (error) {
-    console.error('❌ Erreur retrait membre:', error)
+    console.error('Erreur retrait membre:', error)
     const errorMessage = error.response?.data?.message || error.message || 'Erreur lors du retrait du membre'
     alert(errorMessage)
   }
@@ -356,12 +356,12 @@ const confirmDeleteTask = (task) => {
 
 const deleteTask = async (taskId) => {
   try {
-    console.log('🗑️ Suppression tâche:', taskId)
+    console.log('Suppression tâche:', taskId)
     await taskStore.deleteTask(taskId)
     tasks.value = tasks.value.filter(t => t._id !== taskId)
-    console.log('✅ Tâche supprimée avec succès')
+    console.log('Tâche supprimée avec succès')
   } catch (error) {
-    console.error('❌ Erreur suppression:', error)
+    console.error('Erreur suppression:', error)
     const errorMessage = error.response?.data?.message || error.message || 'Erreur lors de la suppression'
     alert(errorMessage)
   }

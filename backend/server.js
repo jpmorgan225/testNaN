@@ -96,7 +96,7 @@ const connectDB = async (retries = 5) => {
         socketTimeoutMS: 45000,
       });
 
-      console.log('✅ MongoDB connecté avec succès');
+      console.log('MongoDB connecté avec succès');
       return;
     } catch (err) {
       console.error(` Erreur connexion MongoDB (tentative ${i + 1}):`, err.message);

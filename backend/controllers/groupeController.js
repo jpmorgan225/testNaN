@@ -37,10 +37,10 @@ export const getGroupById = async (req, res) => {
     
     // S'assurer que owner est toujours présent (même si populate échoue)
     if (!group.owner) {
-      console.log('⚠️ Owner non peuplé, utilisation de l\'ObjectId brut');
+      console.log('Owner non peuplé, utilisation de l\'ObjectId brut');
     }
     
-    console.log('📦 getGroupById - Groupe:', {
+    console.log('getGroupById - Groupe:', {
       id: group._id,
       name: group.name,
       owner: group.owner,
@@ -50,7 +50,7 @@ export const getGroupById = async (req, res) => {
     
     res.status(200).json({ success: true, data: group });
   } catch (err) {
-    console.error('❌ Erreur getGroupById:', err);
+    console.error('Erreur getGroupById:', err);
     res.status(500).json({ success: false, message: err.message });
   }
 };
@@ -83,7 +83,7 @@ export const joinGroup = async (req, res) => {
     const { token } = req.params;
     const group = await Group.findOne({ inviteToken: token, inviteExpires: { $gt: Date.now() } });
     if (!group) {
-      console.log('❌ Lien invalide ou expiré');
+      console.log('Lien invalide ou expiré');
       return res.status(400).json({ success: false, message: 'Lien invalide ou expiré' });
     }
 
@@ -152,7 +152,7 @@ export const removeMember = async (req, res) => {
     console.log(' Membre retiré avec succès');
     res.status(200).json({ success: true, message: 'Membre retiré avec succès' });
   } catch (err) {
-    console.error('❌ Erreur removeMember:', err);
+    console.error('Erreur removeMember:', err);
     res.status(500).json({ success: false, message: err.message || 'Erreur lors du retrait du membre' });
   }
 };

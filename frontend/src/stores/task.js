@@ -25,13 +25,13 @@ export const useTaskStore = defineStore('task', () => {
 	const createTask = async (payload) => {
 		error.value = ''
 		try {
-			console.log('📝 Création tâche:', payload)
+			console.log('Création tâche:', payload)
 			const { data } = await api.post('/api/tasks', payload)
-			console.log('✅ Réponse création tâche:', data)
+			console.log('Réponse création tâche:', data)
 			// Backend renvoie { success: true, data: task }
 			return data?.data || data
 		} catch (err) {
-			console.error('❌ Erreur création tâche:', err)
+			console.error('Erreur création tâche:', err)
 			error.value = err.response?.data?.message || 'Erreur lors de la création de la tâche'
 			throw err
 		}
@@ -53,12 +53,12 @@ export const useTaskStore = defineStore('task', () => {
 	const deleteTask = async (taskId) => {
 		error.value = ''
 		try {
-			console.log('🗑️ Suppression tâche - ID:', taskId)
+			console.log('Suppression tâche - ID:', taskId)
 			const { data } = await api.delete(`/api/tasks/${taskId}`)
-			console.log('✅ Réponse suppression:', data)
+			console.log('Réponse suppression:', data)
 			return data
 		} catch (err) {
-			console.error('❌ Erreur suppression tâche:', err)
+			console.error('Erreur suppression tâche:', err)
 			error.value = err.response?.data?.message || 'Erreur lors de la suppression de la tâche'
 			throw err
 		}

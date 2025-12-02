@@ -103,7 +103,7 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user || !(await user.comparePassword(password))) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: 'Identifiants invalides' });
     }
     const { accessToken, refreshToken } = generateTokens(user._id);
     await storeRefreshToken(user._id, refreshToken);
@@ -128,7 +128,7 @@ export const logout = async (req, res) => {
     }
     res.clearCookie('accessToken');
     res.clearCookie('refreshToken');
-    res.json({ success: true, message: 'Logged out' });
+    res.json({ success: true, message: 'Déconnexion réussie' });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -137,15 +137,15 @@ export const logout = async (req, res) => {
 export const refreshToken = async (req, res) => {
   try {
     const refreshToken = req.cookies.refreshToken;
-    if (!refreshToken) return res.status(401).json({ message: 'No token' });
+    if (!refreshToken) return res.status(401).json({ message: 'Aucun token fourni' });
 
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
     const stored = await RefreshToken.findOne({ userId: decoded.userId });
-    if (!stored || stored.token !== refreshToken) return res.status(401).json({ message: 'Invalid token' });
+    if (!stored || stored.token !== refreshToken) return res.status(401).json({ message: 'Token invalide' });
 
     const accessToken = jwt.sign({ userId: decoded.userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
     res.cookie('accessToken', accessToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict', maxAge: 15 * 60 * 1000 });
-    res.json({ success: true, message: 'Token refreshed' });
+    res.json({ success: true, message: 'Token renouvelé' });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
